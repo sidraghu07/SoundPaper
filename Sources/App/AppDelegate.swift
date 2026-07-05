@@ -12,6 +12,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var nowPlaying: NowPlayingMonitor!
     private var controlsWindow: ControlsWindow!
     private var captureRetryTimer: Timer?
+    private var widgetWindows: [NSWindow] = []
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         if let iconURL = ResourceLoader.url(forResource: "app", withExtension: "jpg"),
@@ -118,7 +119,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         windows.forEach { $0.close() }
         windows.removeAll()
         renderers.removeAll()
+        widgetWindows.forEach { $0.close() }
+        widgetWindows.removeAll()
         windows = NSScreen.screens.map(makeWallpaperWindow)
+        widgetWindows = NSScreen.screens.map(makeNowPlayingWidgetWindow)
     }
 
     private func makeWallpaperWindow(for screen: NSScreen) -> NSWindow {
@@ -139,13 +143,31 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         metalView.delegate = renderer
         renderers.append(renderer)
 
-        let nowPlayingWidget = NowPlayingWidgetView()
-        nowPlayingWidget.frame.origin = CGPoint(x: 24, y: 24)
-        nowPlayingWidget.autoresizingMask = [.maxXMargin, .maxYMargin]
-        metalView.addSubview(nowPlayingWidget)
-
         window.contentView = metalView
         window.makeKeyAndOrderFront(nil)
+        return window
+    }
+
+    private func makeNowPlayingWidgetWindow(for screen: NSScreen) -> NSWindow {
+        let widgetSize = CGSize(width: 280, height: 72)
+        let origin = CGPoint(x: screen.frame.minX + 24, y: screen.frame.minY + 24)
+        let window = NSWindow(
+            contentRect: CGRect(origin: origin, size: widgetSize),
+            styleMask: [.borderless],
+            backing: .buffered,
+            defer: false
+        )
+        window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.desktopIconWindow)) + 1)
+        window.isOpaque = false
+        window.backgroundColor = .clear
+        window.collectionBehavior = [.canJoinAllSpaces, .stationary]
+        window.isReleasedWhenClosed = false
+        window.isMovableByWindowBackground = true
+
+        let widget = NowPlayingWidgetView()
+        widget.frame = CGRect(origin: .zero, size: widgetSize)
+        window.contentView = widget
+        widget.applyVisibility()
         return window
     }
 

@@ -69,7 +69,12 @@ final class NowPlayingWidgetView: NSView {
         artworkView.image = NowPlayingDisplay.shared.artwork
     }
 
-    @objc private func applyVisibility() {
-        isHidden = !VisualEffectsSettings.shared.showNowPlayingWidget
+    @objc func applyVisibility() {
+        let visible = VisualEffectsSettings.shared.showNowPlayingWidget
+        if visible {
+            window?.orderFrontRegardless()
+        } else {
+            window?.orderOut(nil)
+        }
     }
 }
