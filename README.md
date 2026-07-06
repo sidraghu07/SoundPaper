@@ -28,7 +28,7 @@ A live, audio-reactive desktop wallpaper for macOS. It listens to whatever's pla
 
 ### macOS blocks it the first time
 
-SoundPaper is signed but not notarized through Apple, so Gatekeeper flags it as an unidentified developer. This is expected.
+SoundPaper is signed but not notarized through Apple, so Gatekeeper flags it as an unidentified developer. 
 
 **macOS Sonoma / Sequoia (14 & 15):** try to open it once (it'll be blocked), then go to **System Settings → Privacy & Security**, scroll to the blocked-app message, and click **Open Anyway**. Confirm once more when it relaunches.
 
