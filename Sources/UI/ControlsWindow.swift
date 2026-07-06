@@ -81,8 +81,8 @@ final class ControlsWindow: NSObject {
             button.state = matchesCurrent ? .on : .off
             presetButtons.append(button)
         }
-        let customButton = NSButton(radioButtonWithTitle: "Custom...", target: self, action: #selector(customSelected(_:)))
-        customButton.tag = -1
+        let customButton = NSButton(title: "Custom...", target: self, action: #selector(customSelected(_:)))
+        customButton.bezelStyle = .rounded
         presetButtons.append(customButton)
 
         let effectsStack = NSStackView(views: presetButtons)

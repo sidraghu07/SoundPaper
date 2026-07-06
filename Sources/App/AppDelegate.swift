@@ -66,6 +66,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             object: nil
         )
 
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self,
+            selector: #selector(systemWillSleep),
+            name: NSWorkspace.willSleepNotification,
+            object: nil
+        )
+
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self,
+            selector: #selector(systemDidWake),
+            name: NSWorkspace.didWakeNotification,
+            object: nil
+        )
+
         nowPlaying = NowPlayingMonitor()
         nowPlaying.onUpdate = { title, artist, artworkData in
             guard let artworkData else { return }
@@ -143,6 +157,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func audioSourceChanged() {
         restartCapture()
+        nowPlaying.reset()
+        NowPlayingDisplay.shared.clear()
+        nowPlaying.refresh()
+    }
+
+    @objc private func systemWillSleep() {
+        captureRetryTimer?.invalidate()
+        captureRetryTimer = nil
+        isCapturing = false
+        Task {
+            await capture.stop()
+        }
+    }
+
+    @objc private func systemDidWake() {
+        restartCapture()
+        nowPlaying.refresh()
     }
 
     private func restartCapture() {

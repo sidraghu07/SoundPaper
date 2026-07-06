@@ -17,4 +17,11 @@ final class NowPlayingDisplay {
         self.artwork = artwork
         NotificationCenter.default.post(name: Self.didUpdateNotification, object: nil)
     }
+
+    func clear() {
+        title = ""
+        artist = ""
+        artwork = nil
+        NotificationCenter.default.post(name: Self.didUpdateNotification, object: nil)
+    }
 }
